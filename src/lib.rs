@@ -5,6 +5,7 @@ use std::time::Instant;
 pub struct Config {
     input_file_path: String,
     output_file_path: String,
+    num_threads: u32,
 }
 
 impl Config {
@@ -21,19 +22,27 @@ impl Config {
             None => return Err("no output file path provided"),
         };
 
+        let num_threads: u32 = match args.next().unwrap_or(String::from("1")).parse() {
+            Ok(value) => value,
+            Err(_) => return Err("Unable to parse number of threads"),
+        };
+
         Ok(Config {
             input_file_path,
             output_file_path,
+            num_threads,
         })
     }
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let now = Instant::now();
-    let md_contents = fs::read_to_string(config.input_file_path)?;
+    let file_contents = fs::read_to_string(config.input_file_path)?;
+
+
     let mut keycount = HashMap::new();
     
-    md_contents.lines().for_each(|md_line| count_keys(md_line, &mut keycount));
+    file_contents.lines().for_each(|md_line| count_keys(md_line, &mut keycount));
 
     let mut out_file = File::create(config.output_file_path)?;
     out_file.write("{\n".as_bytes())?;
