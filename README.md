@@ -13,16 +13,16 @@ cargo build --release
 First, generate a keylog file
 
 ```bash
-xinput test <keyboard-ID> > keylog.txt
+xinput test <keyboard-ID> > keylog
 ```
 
 Strip out release events, and delete the starting characters so that the file is just a bunch of numbers on each line.
 
 ```bash
-grep "press" keylog.txt | awk '{print $3}' > keycodes
+grep "press" keylog | awk '{print $3}' > keycodes
 ```
 Finally run the parser.
 
 ```bash
-./keylogger keylog.txt out.json <number of threads>
+./keylogger keycodes out.json <number of threads>
 ```
